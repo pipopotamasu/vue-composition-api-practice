@@ -1,8 +1,11 @@
 <template>
   <div class="home">
-    <input type="text" name="text-iuput" v-model="value" />
+    <input type="text" name="text-iuput" v-model="state.val" />
     <div>
-      <span>{{ value }}</span>
+      <p>{{ state.val }}</p>
+      <p>{{ count }}</p>
+    </div>
+    <div>
       <button @click="onSubmit">submit</button>
       <button @click="onClear">clear</button>
     </div>
@@ -10,23 +13,35 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { createComponent, computed, reactive } from '@vue/composition-api'
 
-export default Vue.extend({
-  name: 'home',
-  data () {
-    return {
-      value: ''
-    }
-  },
-  methods: {
-    onSubmit() {
-      if (!this.value) return;
-      alert(this.value)
-    },
-    onClear () {
-      this.value = ''
-    }
+function createInputValueComposition () {
+  const state = reactive<{ val: string }>({
+    val: ''
+  });
+
+  const count = computed((): number => state.val.length);
+
+  function onSubmit () {
+    if (!state.val) return;
+    alert(state.val)
+  }
+
+  function onClear () {
+    state.val = ''
+  }
+
+  return {
+    state,
+    count,
+    onSubmit,
+    onClear
+  }
+}
+
+export default createComponent({
+  setup () {
+    return { ...createInputValueComposition() }
   }
 })
 </script>
